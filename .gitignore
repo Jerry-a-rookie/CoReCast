@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+results/
+*.pt
+*.pth
+data/High_Dimensional_Time_Series/*.csv

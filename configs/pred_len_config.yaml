@@ -1,0 +1,35 @@
+
+
+
+
+
+
+Neurolib: [336]
+Solar: [336]
+Atec: [336]
+Meter: [336]
+Temp: [168]
+Wind: [168]
+Traffic-CA: [168]
+Traffic-GLA: [168]
+Traffic-GBA: [168]
+"Air Quality": [28]
+SIRS: [7]
+SP500: [7]
+M5: [7]
+Measles: [7]
+Wiki: [7]
+Wiki-2k: [7]
+Wiki-20k: [7]
+Mobility: [7]
+Rebound: [7]
+
+
+ETTh1: [96, 192, 336, 720]
+ETTh2: [96, 192, 336, 720]
+ETTm1: [96, 192, 336, 720]
+ETTm2: [96, 192, 336, 720]
+Weather: [96, 192, 336, 720]
+Traffic: [96, 192, 336, 720]
+ECL: [96, 192, 336, 720]
+Electricity: [96, 192, 336, 720]
