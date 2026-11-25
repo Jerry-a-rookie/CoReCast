@@ -218,16 +218,17 @@ class Retrieval:
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--data', required=True)
+    p.add_argument('--data-root', default=str(ROOT/'data/High_Dimensional_Time_Series'))
     p.add_argument('--pred-len', type=int, required=True)
     p.add_argument('--seq-factor', type=int, default=4)
     p.add_argument('--seq-len', type=int, default=None, help='Explicit input length; overrides seq-factor')
     p.add_argument('--freq', default='h')
     p.add_argument('--epochs', type=int, default=10)
     p.add_argument('--patience', type=int, default=3)
-    p.add_argument('--batch-size', type=int, default=16)
+    p.add_argument('--batch-size', type=int, default=32)
     p.add_argument('--learning-rate', type=float, default=0.001)
-    p.add_argument('--groups', type=int, default=4)
-    p.add_argument('--topm', type=int, default=20)
+    p.add_argument('--groups', type=int, default=None)
+    p.add_argument('--topm', type=int, default=10)
     p.add_argument('--max-candidates', type=int, default=32)
     p.add_argument('--candidate-stride', type=int, default=7)
     p.add_argument('--kmeans-iters', type=int, default=3)
@@ -249,7 +250,7 @@ def main():
     a = p.parse_args()
     if a.record_queries:
         p.error('Visualization is separate: use scripts/visualize_component_retrieval.py')
-    if not (0 < a.ema_alpha <= 1 and a.groups > 0 and a.topm > 0 and a.max_candidates > 0 and a.candidate_stride > 0 and a.cluster_temperature > 0 and a.weight_temperature > 0):
+    if not (0 < a.ema_alpha <= 1 and (a.groups is None or a.groups > 0) and a.topm > 0 and a.max_candidates > 0 and a.candidate_stride > 0 and a.cluster_temperature > 0 and a.weight_temperature > 0):
         p.error('Invalid retrieval parameters')
     if a.max_candidates < a.topm:
         p.error('max-candidates must be at least topm')
@@ -258,7 +259,7 @@ def main():
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed)
     device = torch.device(('cuda' if torch.cuda.is_available() else 'cpu') if a.device == 'auto' else a.device)
     l, h = (a.seq_len if a.seq_len is not None else a.pred_len*a.seq_factor), a.pred_len
-    cfg = SimpleNamespace(data=a.data, local_dataset_root=str(ROOT/'data/High_Dimensional_Time_Series'), root_path='', data_path='', features='M', target='OT', seq_len=l, label_len=0, pred_len=h, embed='timeF', freq=a.freq, seasonal_patterns='Monthly', batch_size=a.batch_size, num_workers=0, augmentation_ratio=0, model=a.model, task_name='long_term_forecast', moving_avg=25, d_model=a.d_model, d_ff=a.d_model, n_heads=8, e_layers=2, factor=1, dropout=0.1, activation='gelu')
+    cfg = SimpleNamespace(data=a.data, local_dataset_root=a.data_root, root_path='', data_path='', features='M', target='OT', seq_len=l, label_len=0, pred_len=h, embed='timeF', freq=a.freq, seasonal_patterns='Monthly', batch_size=a.batch_size, num_workers=0, augmentation_ratio=0, model=a.model, task_name='long_term_forecast', moving_avg=25, d_model=a.d_model, d_ff=a.d_model, n_heads=8, e_layers=2, factor=1, dropout=0.1, activation='gelu')
     cfg.alpha = 0.001
     cfg.channel_reduction_ratio = 16
     cfg.n_cluster = 10
@@ -280,6 +281,10 @@ def main():
     if not np.isfinite(data).all():
         raise ValueError('Dataset contains nonfinite values; explicit missing-data policy required')
     cfg.enc_in = data.shape[1]
+    if a.data == 'Solar' and cfg.enc_in != 137:
+        raise ValueError(f'Standard Solar requires 137 channels, got {cfg.enc_in}; check solar.csv')
+    if a.groups is None:
+        a.groups = (cfg.enc_in + (2 if cfg.enc_in < 100 else 9)) // (3 if cfg.enc_in < 100 else 10)
     print(json.dumps({'data':a.data,'channels':cfg.enc_in,'seq_len':l,'pred_len':h,'split_sizes':[len(d) for d in datasets], 'device':str(device)}, ensure_ascii=False), flush=True)
     is_component_model = a.model in ('ComponentRAFT', 'ComponentRAFTSeasonTrend')
     retriever = Retrieval(data, len(train.data_x), l, h, a, device,

@@ -54,7 +54,14 @@ python -u scripts/run_component_raft.py \
   --seed 2021 --device cuda --output results/atec_dlinear
 ```
 
-Results are saved in `results/atec_dlinear`.
+Results are saved in `results/atec_dlinear`. The runner uses chronological 70/10/20 splits and fits normalization on the training split. For the paper protocol, generate or execute a matrix with:
+
+```bash
+python scripts/run_paper_protocol.py --scope module --datasets Atec --models DLinear
+python scripts/run_paper_protocol.py --scope module --datasets Atec --models DLinear --execute --resume --device cuda
+```
+
+The matrix defaults to seeds 2021–2025. Standard datasets use input length 512 and 10 epochs with patience 3; high-dimensional datasets use the windows in the table and 100 epochs with patience 5. Both begin with batch size 32 and retry CUDA out-of-memory failures at smaller batch sizes. The module runner covers the original and CoReCast variants; use `--scope model` for CRC-Linear. Data files must have a `date` column followed by the time-series channels. Place Exchange, Illness, and standard Solar at `exchange_rate.csv`, `national_illness.csv`, and `solar.csv` respectively in the data directory. Standard Solar must contain 137 channels; it is distinct from the high-dimensional NREL Solar file. Use `--data-root` to select a different directory containing the data and `datasets.yaml`. The repository does not include the competing retrieval modules or the scripts for every ablation and analysis in the paper.
 
 ## Experimental Results
 

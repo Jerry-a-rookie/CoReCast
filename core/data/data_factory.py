@@ -13,10 +13,7 @@ data_dict = {
 
 
 def data_provider(args, flag, accelerator=None):
-    if args.data in data_dict.keys():
-        Data = data_dict[args.data]
-    else:
-        Data = data_dict['custom']
+    Data = Dataset_Custom
 
     timeenc = 0 if args.embed != 'timeF' else 1
 

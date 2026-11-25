@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 
-STANDARD_DATASETS = ('ETTh1', 'ETTh2', 'ETTm1', 'ETTm2', 'Illness', 'Weather', 'ECL', 'Traffic')
+STANDARD_DATASETS = ('ETTh1', 'ETTh2', 'ETTm1', 'ETTm2', 'Illness', 'Weather', 'ECL', 'Traffic', 'Exchange', 'Solar')
 DATA_ORDER = {name: i for i, name in enumerate(STANDARD_DATASETS)}
 
 

@@ -14,7 +14,7 @@ configs:
 - config_name: Wind
   data_files: "global_wind.csv"
 - config_name: Solar
-  data_files: "nrel_solar_power.csv"
+  data_files: "solar.csv"
 - config_name: SIRS
   data_files: "sirs.csv"
 - config_name: Atec
@@ -51,3 +51,8 @@ configs:
   data_files: "weather.csv"
 - config_name: Traffic
   data_files: "traffic.csv"
+
+- config_name: Exchange
+  data_files: "exchange_rate.csv"
+- config_name: Illness
+  data_files: "national_illness.csv"
