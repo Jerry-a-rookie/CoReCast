@@ -65,25 +65,21 @@ def create_default_config(model_name, output_dir="config_hp"):
         config.update(model_specific[model_name])
     
                                        
-    config_str = f"# Hyperparameter search configuration for {model_name}\n"
-    config_str += "# Each parameter should be a list of values to search\n\n"
+    config_str = ""
     
                                 
-    config_str += "# Model architecture\n"
     for k in ["d_model", "n_heads", "e_layers", "d_layers", "d_ff"]:
         if k in config:
             config_str += f"{k}: {config[k]}\n"
     config_str += "\n"
     
                           
-    config_str += "# Optimization\n"
     for k in ["learning_rate", "dropout", "batch_size"]:
         if k in config:
             config_str += f"{k}: {config[k]}\n"
     config_str += "\n"
     
                             
-    config_str += "# Model specific\n"
     for k, v in config.items():
         if k not in ["d_model", "n_heads", "e_layers", "d_layers", "d_ff", "learning_rate", "dropout", "batch_size"]:
             config_str += f"{k}: {v}\n"
